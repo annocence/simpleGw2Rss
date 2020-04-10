@@ -11,21 +11,27 @@ import java.time.ZoneId
 class PlayGw2Evaluator {
 
     public static final String DAILYANSWER = "DAILYANSWER"
-    Map<Integer, String> workdays = getWorkdaysMap()
-    Map<Integer, String> weekend = getWeekendsMap()
-    String dailyMessage = "Not Today"
-    int count;
-    LocalDateTime lastTimeAsked
+    private final Map<Integer, String> workdays = getWorkdaysMap()
+    private final Map<Integer, String> weekend = getWeekendsMap()
+
+    private String dailyMessage = "Not Today"
+    private int count
+    private LocalDateTime lastTimeAsked
+
 
     String evaluatePlayGw2() {
         def now = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS["PST"]))
-        now = LocalDateTime.parse('2007-12-03T22:22:30')
+//        now = LocalDateTime.parse('2007-12-03T22:22:30')
         lastTimeAsked = (lastTimeAsked != null && lastTimeAsked.plusHours(24).isBefore(now)) ? lastTimeAsked : now
         lastTimeAsked.getDayOfYear() != now.dayOfYear ? count = 0 : count++
 
         def hour = now.getHour()
         def answer = (now.getDayOfWeek().value < 6) ? workdays[hour] : weekend[hour]
-        return answer.replace(DAILYANSWER, dailyMessage) + " (Asking for the ${count}. time today)"
+        return answer.replace(DAILYANSWER, dailyMessage) // + " (Asking for the ${count}. time today)"
+    }
+
+    void setDailyMessage(String newMessage) {
+        this.dailyMessage = newMessage
     }
 
     private static Map<Integer, String> getWorkdaysMap() {
@@ -44,9 +50,5 @@ class PlayGw2Evaluator {
         (10..17).forEach { Integer i -> map.put(i, "shouldn't spend time with your family?") }
         (18..23).forEach { Integer i -> map.put(i, DAILYANSWER) }
         return map
-    }
-
-    void setDailyMessage(String newMessage){
-        this.dailyMessage = newMessage
     }
 }
