@@ -7,6 +7,7 @@ import groovy.transform.CompileStatic
 class Gw2Module extends AbstractModule {
     @Override
     protected void configure() {
-        bind(PlayGw2Evaluator)
+        bind PlayGw2Evaluator
+        bind GiphyRenderer
     }
 }
