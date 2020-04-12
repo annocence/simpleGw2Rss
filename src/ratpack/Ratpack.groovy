@@ -20,8 +20,8 @@ ratpack {
         }
 
         get("set/:dailyanswer") { ctx ->
-            Optional<String> authML = context.header("authML")
-            if ("YOYOYO" == authML.orElse("")) {
+            Optional<String> authML = context.header(System.getenv("AUTH_ANSWER_HEADER"))
+            if (System.getenv("AUTH_ANSWER_PW") == authML.orElse("")) {
                 ctx.next()
             } else {
                 render ""
