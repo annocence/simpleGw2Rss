@@ -1,10 +1,7 @@
 package de.ml.gw2
 
 import com.google.inject.Singleton
-import groovy.sql.GroovyRowResult
-import groovy.sql.Sql
 import groovy.transform.CompileStatic
-import org.postgresql.util.PSQLException
 
 import java.sql.SQLException
 import java.time.LocalDateTime
@@ -27,7 +24,7 @@ class PlayGw2Evaluator {
         lastTimeAsked.getHour() != now.hour ? count = 0 : count++
 
         def hour = now.getHour()
-        def answer = (now.getDayOfWeek().value < 6) ? workdays[hour] : weekend[hour]
+        def answer = DAILYANSWER // (now.getDayOfWeek().value < 6) ? workdays[hour] : weekend[hour]
         if (count > 10) {
             return "Come back later!"  //+ " (Asking (lasteTime=$lastTimeAsked) for the ${count}. time today $now)"
         }
@@ -39,9 +36,9 @@ class PlayGw2Evaluator {
         this.dailyMessage = newMessage
         def rows = DBInitializer.sql.rows('''SELECT playgw2 FROM gw2rss;''', {})
         if (rows.size() == 0) {
-            DBInitializer.sql.execute("INSERT INTO gw2rss VALUES (0,$newMessage);")
+            DBInitializer.sql.execute("INSERT INTO gw2rss VALUES (0, '$newMessage' );")
         } else {
-            DBInitializer.sql.execute("UPDATE gw2rss SET playgw2=${newMessage} WHERE id = 0;")
+            DBInitializer.sql.execute("UPDATE gw2rss SET playgw2 = '$newMessage' WHERE id = 0;")
         }
     }
 
@@ -53,7 +50,7 @@ class PlayGw2Evaluator {
         playgw2 varchar(50)       
         );''')
             def rows = sql.rows('''SELECT playgw2 FROM gw2rss;''', {})
-            return rows.size() > 0 ? rows[0] : this.dailyMessage
+            return rows.size() > 0 ? rows[0].get("playgw2") : this.dailyMessage
         } catch (SQLException | IOException e) {
             println "Error occurred during DB connection: ${e}"
             return this.dailyMessage

@@ -19,16 +19,23 @@ class GiphyRenderer {
             giphyIframe = feed.dataList.get(0).images.original.url
         } catch (GiphyException ignore) {
         }
-        return '''<html><head>
-    <title>$searchString</title>
-    <style>
-      .center {
-          display: block;
-          margin-left: auto;
-          margin-right: auto;
-          width: 50%;
-      }
-    </style>
-  </head><img src="$giphyIframe" title="$searchString" class="center" ></html>'''
+        return """<html>
+    <head>
+        <title>$searchString</title>
+        <style>
+            .center {
+              display: block;
+              margin-left: auto;
+              margin-right: auto;
+              text-align: center;
+              width: 50%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="center"><b>${searchString}<b></div>
+        <img src="${giphyIframe}" title="${searchString}" class="center" >
+    </body>
+</html>"""
     }
 }
