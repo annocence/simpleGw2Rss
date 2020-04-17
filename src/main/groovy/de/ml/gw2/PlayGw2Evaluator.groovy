@@ -37,6 +37,12 @@ class PlayGw2Evaluator {
 
     void setDailyMessage(String newMessage) {
         this.dailyMessage = newMessage
+        def rows = DBInitializer.sql.rows('''SELECT playgw2 FROM gw2rss;''', {})
+        if (rows.size() == 0) {
+            DBInitializer.sql.execute("INSERT INTO gw2rss VALUES (0,$newMessage);")
+        } else {
+            DBInitializer.sql.execute("UPDATE gw2rss SET playgw2=${newMessage} WHERE id = 0;")
+        }
     }
 
     String getDailyMessage() {
@@ -48,7 +54,7 @@ class PlayGw2Evaluator {
         );''')
             def rows = sql.rows('''SELECT playgw2 FROM gw2rss;''', {})
             return rows.size() > 0 ? rows[0] : this.dailyMessage
-        } catch (PSQLException| SQLException | IOException e) {
+        } catch (SQLException | IOException e) {
             println "Error occurred during DB connection: ${e}"
             return this.dailyMessage
         }
