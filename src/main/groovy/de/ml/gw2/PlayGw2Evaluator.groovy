@@ -1,8 +1,12 @@
 package de.ml.gw2
 
 import com.google.inject.Singleton
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
 import groovy.transform.CompileStatic
+import org.postgresql.util.PSQLException
 
+import java.sql.SQLException
 import java.time.LocalDateTime
 import java.time.ZoneId
 
@@ -27,12 +31,27 @@ class PlayGw2Evaluator {
         if (count > 10) {
             return "Come back later!"  //+ " (Asking (lasteTime=$lastTimeAsked) for the ${count}. time today $now)"
         }
-        return answer.replace(DAILYANSWER, dailyMessage)
+        return answer.replace(DAILYANSWER, getDailyMessage())
         //+ " (Asking (lasteTime=$lastTimeAsked) for the ${count}. time today $now)"
     }
 
     void setDailyMessage(String newMessage) {
         this.dailyMessage = newMessage
+    }
+
+    String getDailyMessage() {
+        try {
+            def sql = DBInitializer.sql
+            sql.execute('''CREATE TABLE IF NOT EXISTS gw2rss(
+        id integer not null,
+        playgw2 varchar(50)       
+        );''')
+            def rows = sql.rows('''SELECT playgw2 FROM gw2rss;''', {})
+            return rows.size() > 0 ? rows[0] : this.dailyMessage
+        } catch (PSQLException| SQLException | IOException e) {
+            println "Error occurred during DB connection: ${e}"
+            return this.dailyMessage
+        }
     }
 
     private static Map<Integer, String> getWorkdaysMap() {
