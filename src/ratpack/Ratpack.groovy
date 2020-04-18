@@ -1,6 +1,7 @@
 import de.ml.gw2.GiphyRenderer
 import de.ml.gw2.config.Gw2Module
 import de.ml.gw2.PlayGw2Evaluator
+import de.ml.gw2.db.DBAccessor
 
 import static ratpack.groovy.Groovy.ratpack
 
@@ -19,6 +20,10 @@ ratpack {
             if (System.getenv("AUTH_ANSWER_PW") == authML.orElse("")) {
                 ctx.next()
             } else {
+                if (context.getPathTokens().get("dailyanswer") == "resetDB") {
+                    DBAccessor.resetDB()
+                    render("DB reset")
+                }
                 render ""
             }
         }

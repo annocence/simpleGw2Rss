@@ -34,4 +34,8 @@ class DBAccessor {
             sql.execute("UPDATE gw2rss SET daily_message = '$newMessage' WHERE id = 0;")
         }
     }
+
+    static void resetDB(){
+        DBInitializer.sql.execute('''DROP TABLE gw2rss;''')
+    }
 }
