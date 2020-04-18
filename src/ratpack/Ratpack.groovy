@@ -1,11 +1,6 @@
 import de.ml.gw2.GiphyRenderer
-import de.ml.gw2.Gw2Module
+import de.ml.gw2.config.Gw2Module
 import de.ml.gw2.PlayGw2Evaluator
-import ratpack.exec.Promise
-import ratpack.handling.Context
-import ratpack.http.client.HttpClient
-import ratpack.http.client.ReceivedResponse
-
 
 import static ratpack.groovy.Groovy.ratpack
 

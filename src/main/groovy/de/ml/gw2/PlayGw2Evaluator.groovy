@@ -1,9 +1,9 @@
 package de.ml.gw2
 
 import com.google.inject.Singleton
+import de.ml.gw2.db.DBAccessor
 import groovy.transform.CompileStatic
 
-import java.sql.SQLException
 import java.time.LocalDateTime
 import java.time.ZoneId
 
@@ -34,27 +34,11 @@ class PlayGw2Evaluator {
 
     void setDailyMessage(String newMessage) {
         this.dailyMessage = newMessage
-        def rows = DBInitializer.sql.rows('''SELECT playgw2 FROM gw2rss;''', {})
-        if (rows.size() == 0) {
-            DBInitializer.sql.execute("INSERT INTO gw2rss VALUES (0, '$newMessage' );")
-        } else {
-            DBInitializer.sql.execute("UPDATE gw2rss SET playgw2 = '$newMessage' WHERE id = 0;")
-        }
+        DBAccessor.setDailyMessage(newMessage)
     }
 
     String getDailyMessage() {
-        try {
-            def sql = DBInitializer.sql
-            sql.execute('''CREATE TABLE IF NOT EXISTS gw2rss(
-        id integer not null,
-        playgw2 varchar(50)       
-        );''')
-            def rows = sql.rows('''SELECT playgw2 FROM gw2rss;''', {})
-            return rows.size() > 0 ? rows[0].get("playgw2") : this.dailyMessage
-        } catch (SQLException | IOException e) {
-            println "Error occurred during DB connection: ${e}"
-            return this.dailyMessage
-        }
+        return DBAccessor.getDailyMessageOr(this.dailyMessage)
     }
 
     private static Map<Integer, String> getWorkdaysMap() {

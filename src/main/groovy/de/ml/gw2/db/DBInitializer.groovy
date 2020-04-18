@@ -1,4 +1,4 @@
-package de.ml.gw2
+package de.ml.gw2.db
 
 import groovy.sql.Sql
 
