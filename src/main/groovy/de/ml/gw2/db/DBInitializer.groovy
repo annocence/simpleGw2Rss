@@ -10,7 +10,9 @@ class DBInitializer {
 
     private static Sql getConnection() throws URISyntaxException, SQLException {
         if (System.getenv("DATABASE_URL") == null) {
-            return Sql.newInstance("jdbc:hsqldb:mem:testdb",  "org.hsqldb.jdbc.JDBCDriver")
+            def instance = Sql.newInstance("jdbc:hsqldb:mem:testdb", "org.hsqldb.jdbc.JDBCDriver")
+            initDB(instance)
+            return instance
         }
         URI dbUri = new URI(System.getenv("DATABASE_URL"));
 
@@ -19,7 +21,16 @@ class DBInitializer {
         String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath() + "?sslmode=require";
         String driver = "org.postgresql.Driver"
 
-        return Sql.newInstance(dbUrl, username, password, driver)
+        def instance = Sql.newInstance(dbUrl, username, password, driver)
+        initDB(instance)
+        return instance
+    }
+
+    private static void initDB(Sql instance) {
+        instance.execute('''CREATE TABLE IF NOT EXISTS gw2rss (
+            id integer not null,
+            daily_message varchar(50)       
+        );''')
     }
 }
 

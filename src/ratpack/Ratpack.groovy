@@ -20,10 +20,6 @@ ratpack {
             if (System.getenv("AUTH_ANSWER_PW") == authML.orElse("")) {
                 ctx.next()
             } else {
-                if (context.getPathTokens().get("dailyanswer") == "resetDB") {
-                    DBAccessor.resetDB()
-                    render("DB reset")
-                }
                 render ""
             }
         }
